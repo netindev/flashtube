@@ -4,55 +4,67 @@ using flashtube.Models;
 using YoutubeDLSharp;
 using System.Net;
 using System.Net.Mime;
+using System.IO;
+using System.Threading.Tasks;
 
-namespace flashtube.Controllers;
-
-public class HomeController : Controller
+namespace flashtube.Controllers
 {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-        YoutubeLinkModel video = new YoutubeLinkModel(); 
-        return View(video);
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [Route("DownloadVideo")]
-    public async Task<IActionResult> DownloadVideo(string Url)
-    {
-        if (string.IsNullOrEmpty(Url))
+        public IActionResult Index()
         {
-            return BadRequest("Please provide a valid video URL.");
+            YoutubeLinkModel video = new YoutubeLinkModel();
+            return View(video);
         }
 
-        try
+        public IActionResult Privacy()
         {
-            var ytdl = new YoutubeDL();
-            ytdl.YoutubeDLPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/yt-dlp.exe";
-            ytdl.FFmpegPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/ffmpeg.exe";
-            var downloadResult = await ytdl.RunVideoDownload(Url);
+            return View();
+        }
 
-            if (downloadResult.Success)
+        [HttpPost("DownloadVideo")]
+        public async Task<IActionResult> DownloadVideo(string Url, string Format)
+        {
+            if (string.IsNullOrEmpty(Url))
             {
-                var filePath = downloadResult.Data;
-                var fileName = Path.GetFileName(filePath);
+                return BadRequest("Please provide a valid video URL.");
+            }
 
-                var fileBytes = System.IO.File.ReadAllBytes(filePath);
-                var mimeTypes = MimeTypes.GetMimeType(filePath);
-                return File(fileBytes, mimeTypes, fileName);
-            }
-            else
+            try
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, downloadResult.ErrorOutput);
+                var ytdl = new YoutubeDL
+                {
+                    YoutubeDLPath = "/home/jose.neto/flashtube-stuff/yt-dlp_linux",
+                    FFmpegPath = "/home/jose.neto/flashtube-stuff/ffmpeg"
+                };
+                var downloadResult = Format.Equals("mp3", StringComparison.CurrentCultureIgnoreCase) ?
+                    await ytdl.RunAudioDownload(Url, YoutubeDLSharp.Options.AudioConversionFormat.Mp3) :
+                    await ytdl.RunVideoDownload(Url);
+                if (downloadResult.Success)
+                {
+                    var filePath = downloadResult.Data;
+                    var fileName = Path.GetFileName(filePath);
+
+                    var fileBytes = System.IO.File.ReadAllBytes(filePath);
+                    var mimeTypes = MimeTypes.GetMimeType(filePath);
+
+                    if (Format.Equals("mp3", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        fileName = Path.ChangeExtension(fileName, "mp3");
+                    }
+
+                    // Return file name along with file bytes
+                    return Ok(new { FileName = fileName, FileBytes = fileBytes });
+                }
+                else
+                {
+                    return StatusCode((int)HttpStatusCode.InternalServerError, downloadResult.ErrorOutput);
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
     }
-
 }

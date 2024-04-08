@@ -5,9 +5,21 @@
 
 <div class="text-center body-margin">
     <h1 class="display-4">flashtube</h1>
-    <p>A free youtube video converter to MP3</p>
-    <form asp-action="DownloadVideo" asp-controller="Home" method="post">
-            <input type="text" id="urlInput" name="url" placeholder="Enter Youtube Video URL" class="form-control" />
-            <button type="submit" class="btn btn-primary">Download</button>
+    <p>A free service for downloading your youtube video and converting it to MP3</p>
+    <form id="downloadForm">
+        <div class="row">
+            <div class="col-11">
+                <input type="text" id="urlInput" name="url" placeholder="Enter Youtube Video URL"
+                    class="form-control" />
+            </div>
+            <div class="col-1">
+                <select id="formatSelect" class="form-control">
+                    <option value="webm">WEBM</option>
+                    <option value="mp3">MP3</option>
+                </select>
+            </div>
+        </div>
+        <div id="downloadStatus" style="display: none; margin-top: 20px;">Downloading...</div>
+        <button type="submit" class="btn btn-primary" id="downloadButton" style="margin-top: 20px;">Download</button>
     </form>
 </div>
