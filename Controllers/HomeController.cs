@@ -29,7 +29,6 @@ namespace flashtube.Controllers
             {
                 return BadRequest("Please provide a valid video URL.");
             }
-
             try
             {
                 var ytdl = new YoutubeDL
@@ -44,16 +43,12 @@ namespace flashtube.Controllers
                 {
                     var filePath = downloadResult.Data;
                     var fileName = Path.GetFileName(filePath);
-
                     var fileBytes = System.IO.File.ReadAllBytes(filePath);
                     var mimeTypes = MimeTypes.GetMimeType(filePath);
-
                     if (Format.Equals("mp3", StringComparison.CurrentCultureIgnoreCase))
                     {
                         fileName = Path.ChangeExtension(fileName, "mp3");
                     }
-
-                    // Return file name along with file bytes
                     return Ok(new { FileName = fileName, FileBytes = fileBytes });
                 }
                 else

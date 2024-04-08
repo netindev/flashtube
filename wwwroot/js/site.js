@@ -1,31 +1,20 @@
 ﻿document.getElementById('downloadForm').addEventListener('submit', function (event) {
-    // Prevent default form submission
     event.preventDefault();
-
-    // Show downloading label
     document.getElementById('downloadStatus').style.display = 'block';
-    document.getElementById('downloadButton').disabled = true; // Disable download button
-
-    // Get the video URL
+    document.getElementById('downloadButton').disabled = true;
     var url = document.getElementById('urlInput').value;
     var format = document.getElementById('formatSelect').value;
-
-    // Create FormData object and append the URL
     var formData = new FormData();
     formData.append('Url', url);
     formData.append('Format', format);
-
-    // Send a POST request to initiate download
     fetch('/DownloadVideo', {
         method: 'POST',
         body: formData
     })
         .then(response => {
             if (response.ok) {
-                // Extract file name and file bytes from the response
                 return response.json();
             } else {
-                // Download failed
                 throw new Error('Download failed');
             }
         })
@@ -50,7 +39,6 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            // Hide downloading label and enable download button
             document.getElementById('downloadStatus').style.display = 'none';
             document.getElementById('downloadButton').disabled = false;
             alert('An error occurred during download. Please try again.');
