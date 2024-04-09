@@ -2,7 +2,13 @@
     document.getElementById('thumbnail').style.display = 'none';
 });
 document.getElementById('downloadForm').addEventListener('submit', function (event) {
+    console.log($('#downloadButton').text());
+    if ($('#downloadButton').text() === 'Download another!') {
+        location.reload(true);
+        return;
+    }    
     event.preventDefault();
+    $('#downloadStatus').html('Fetching video data...').css('display', 'block');
     document.getElementById('downloadButton').disabled = true;
     var url = document.getElementById('urlInput').value;
     var format = document.getElementById('formatSelect').value;
@@ -54,13 +60,11 @@ document.getElementById('downloadForm').addEventListener('submit', function (eve
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            document.getElementById('thumbnail').style.display = 'none';
-            document.getElementById('downloadStatus').style.display = 'none';
-            document.getElementById('downloadButton').disabled = false;
+            $('#downloadButton').html('Download another!').prop('disabled', false);            
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('downloadButton').disabled = false;
-            document.getElementById('downloadStatus').innerHTML = 'An error occured while downloading. Please try again';
+            $('#downloadButton').prop('disabled', false);
+            $('#downloadStatus').html('An error occurred while downloading. Please try again');            
         });
 });
