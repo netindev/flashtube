@@ -1,4 +1,5 @@
 using YoutubeDLSharp;
+using YoutubeDLSharp.Metadata;
 using YoutubeDLSharp.Options;
 
 namespace flashtube.Models;
@@ -22,7 +23,7 @@ public class YoutubeLinkModel
         {
             var info = await ytdl.RunAudioDownload(this.UrlId, YoutubeDLSharp.Options.AudioConversionFormat.Mp3);
             this.Success = info.Success;
-            foreach(var error in info.ErrorOutput)
+            foreach (var error in info.ErrorOutput)
             {
                 this.Error += error + " ";
             }
@@ -30,13 +31,14 @@ public class YoutubeLinkModel
             return this;
 
 
-        } else if (this.Format.Equals("mp4", StringComparison.CurrentCultureIgnoreCase))
+        }
+        else if (this.Format.Equals("mp4", StringComparison.CurrentCultureIgnoreCase))
         {
 
-            var info = await ytdl.RunVideoDownload(this.UrlId, overrideOptions: options );
+            var info = await ytdl.RunVideoDownload(this.UrlId, overrideOptions: options);
             this.Success = info.Success;
             this.Path = info.Data;
-            foreach(var error in info.ErrorOutput)
+            foreach (var error in info.ErrorOutput)
             {
                 this.Error += error + " ";
             }
@@ -49,7 +51,7 @@ public class YoutubeLinkModel
             var info = await ytdl.RunVideoDownload(this.UrlId);
             this.Success = info.Success;
             this.Path = info.Data;
-            foreach(var error in info.ErrorOutput)
+            foreach (var error in info.ErrorOutput)
             {
                 this.Error += error + " ";
             }
