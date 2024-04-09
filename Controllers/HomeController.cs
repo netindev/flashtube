@@ -33,27 +33,36 @@ namespace flashtube.Controllers
             {
                 var ytdl = new YoutubeDL
                 {
-                    YoutubeDLPath = "/home/jose.neto/flashtube-stuff/yt-dlp_linux",
-                    FFmpegPath = "/home/jose.neto/flashtube-stuff/ffmpeg"
+                    YoutubeDLPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/yt-dlp.exe",
+                    FFmpegPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/ffmpeg.exe",
                 };
-                var downloadResult = Format.Equals("mp3", StringComparison.CurrentCultureIgnoreCase) ?
-                    await ytdl.RunAudioDownload(Url, YoutubeDLSharp.Options.AudioConversionFormat.Mp3) :
-                    await ytdl.RunVideoDownload(Url);
-                if (downloadResult.Success)
+
+                var ytModel = new YoutubeLinkModel
                 {
-                    var filePath = downloadResult.Data;
+                    UrlId = Url,
+                    Format = Format
+                };
+
+                await ytModel.Download(ytdl);
+
+                if (ytModel.Success)
+                {
+                    var filePath = ytModel.Path;
                     var fileName = Path.GetFileName(filePath);
                     var fileBytes = System.IO.File.ReadAllBytes(filePath);
                     var mimeTypes = MimeTypes.GetMimeType(filePath);
                     if (Format.Equals("mp3", StringComparison.CurrentCultureIgnoreCase))
                     {
                         fileName = Path.ChangeExtension(fileName, "mp3");
+                    } else if (Format.Equals("mp4", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        fileName = Path.ChangeExtension(fileName, "mp4");
                     }
                     return Ok(new { FileName = fileName, FileBytes = fileBytes });
                 }
                 else
                 {
-                    return StatusCode((int)HttpStatusCode.InternalServerError, downloadResult.ErrorOutput);
+                    return StatusCode((int)HttpStatusCode.InternalServerError, ytModel.Error);
                 }
             }
             catch (Exception ex)
