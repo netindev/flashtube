@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Mime;
 using System.IO;
 using System.Threading.Tasks;
+using YoutubeDLSharp.Metadata;
 
 namespace flashtube.Controllers
 {
@@ -20,6 +21,31 @@ namespace flashtube.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+        [HttpPost("VideoData")]
+        public async Task<IActionResult> VideoData(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return BadRequest("Failed to grab Video metadata");
+            }
+            try
+            {
+                var ytdl = new YoutubeDL
+                {
+                    YoutubeDLPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/yt-dlp.exe",
+                    FFmpegPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/ffmpeg.exe",
+                };
+                var res = await ytdl.RunVideoDataFetch(url);
+                VideoData video = res.Data;
+                string title = video.Title;
+                var thumb = video.Thumbnail;
+                return Ok(new { title = video.Title, thumb = video.Thumbnail});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost("DownloadVideo")]
@@ -54,7 +80,8 @@ namespace flashtube.Controllers
                     if (Format.Equals("mp3", StringComparison.CurrentCultureIgnoreCase))
                     {
                         fileName = Path.ChangeExtension(fileName, "mp3");
-                    } else if (Format.Equals("mp4", StringComparison.CurrentCultureIgnoreCase))
+                    }
+                    else if (Format.Equals("mp4", StringComparison.CurrentCultureIgnoreCase))
                     {
                         fileName = Path.ChangeExtension(fileName, "mp4");
                     }
