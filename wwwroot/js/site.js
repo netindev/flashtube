@@ -6,7 +6,7 @@ document.getElementById('downloadForm').addEventListener('submit', function (eve
     document.getElementById('downloadButton').disabled = true;
     var url = document.getElementById('urlInput').value;
     var format = document.getElementById('formatSelect').value;
-    
+
     var videoData = new FormData();
     videoData.append('Url', url);
     fetch('/VideoData', {
@@ -17,10 +17,8 @@ document.getElementById('downloadForm').addEventListener('submit', function (eve
         .then(data => {
             var title = data.title;
             var thumb = data.thumb;
-            document.getElementById('downloadStatus').innerHTML = "Downloading " + title;
-            document.getElementById('downloadStatus').style.display = 'block';
-            document.getElementById('thumbnail').src = thumb;
-            document.getElementById('thumbnail').style.display = 'block';
+            $('#downloadStatus').html(title).css('display', 'block');
+            $('#thumbnail').attr('src', thumb).css('display', 'block');
         })
         .catch(error => {
             console.error('Error:', error);

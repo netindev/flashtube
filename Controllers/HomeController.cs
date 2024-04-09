@@ -1,17 +1,16 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using flashtube.Models;
 using YoutubeDLSharp;
 using System.Net;
-using System.Net.Mime;
-using System.IO;
-using System.Threading.Tasks;
 using YoutubeDLSharp.Metadata;
 
 namespace flashtube.Controllers
 {
     public class HomeController : Controller
     {
+        public string YoutubeDLPath = "/home/jose.neto/flashtube-stuff/yt-dlp_linux",
+            FFmpegPath = "/home/jose.neto/flashtube-stuff/ffmpeg";
+
         public IActionResult Index()
         {
             YoutubeLinkModel video = new YoutubeLinkModel();
@@ -27,20 +26,20 @@ namespace flashtube.Controllers
         {
             if (string.IsNullOrEmpty(url))
             {
-                return BadRequest("Failed to grab Video metadata");
+                return BadRequest("Failed to fetch video metadata");
             }
             try
             {
                 var ytdl = new YoutubeDL
                 {
-                    YoutubeDLPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/yt-dlp.exe",
-                    FFmpegPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/ffmpeg.exe",
+                    YoutubeDLPath = YoutubeDLPath,
+                    FFmpegPath = FFmpegPath,
                 };
                 var res = await ytdl.RunVideoDataFetch(url);
                 VideoData video = res.Data;
                 string title = video.Title;
                 var thumb = video.Thumbnail;
-                return Ok(new { title = video.Title, thumb = video.Thumbnail});
+                return Ok(new { title = video.Title, thumb = video.Thumbnail });
             }
             catch (Exception ex)
             {
@@ -59,8 +58,8 @@ namespace flashtube.Controllers
             {
                 var ytdl = new YoutubeDL
                 {
-                    YoutubeDLPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/yt-dlp.exe",
-                    FFmpegPath = "C:/Users/thiago.barbieri/Documents/Projects/flashtube/bin/ffmpeg.exe",
+                    YoutubeDLPath = YoutubeDLPath,
+                    FFmpegPath = FFmpegPath,
                 };
 
                 var ytModel = new YoutubeLinkModel
