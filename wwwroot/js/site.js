@@ -1,9 +1,31 @@
-﻿document.getElementById('downloadForm').addEventListener('submit', function (event) {
+﻿$(document).ready(function () {
+    document.getElementById('thumbnail').style.display = 'none';
+});
+document.getElementById('downloadForm').addEventListener('submit', function (event) {
     event.preventDefault();
-    document.getElementById('downloadStatus').style.display = 'block';
     document.getElementById('downloadButton').disabled = true;
     var url = document.getElementById('urlInput').value;
     var format = document.getElementById('formatSelect').value;
+    
+    var videoData = new FormData();
+    videoData.append('Url', url);
+    fetch('/VideoData', {
+        method: 'POST',
+        body: videoData
+    })
+        .then(data => data.json())
+        .then(data => {
+            var title = data.title;
+            var thumb = data.thumb;
+            document.getElementById('downloadStatus').innerHTML = "Downloading " + title;
+            document.getElementById('downloadStatus').style.display = 'block';
+            document.getElementById('thumbnail').src = thumb;
+            document.getElementById('thumbnail').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
     var formData = new FormData();
     formData.append('Url', url);
     formData.append('Format', format);
@@ -34,13 +56,13 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            document.getElementById('thumbnail').style.display = 'none';
             document.getElementById('downloadStatus').style.display = 'none';
             document.getElementById('downloadButton').disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('downloadStatus').style.display = 'none';
             document.getElementById('downloadButton').disabled = false;
-            alert('An error occurred during download. Please try again.');
+            document.getElementById('downloadStatus').innerHTML = 'An error occured while downloading. Please try again';
         });
 });
