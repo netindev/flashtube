@@ -1,6 +1,6 @@
 ﻿@model YoutubeLinkModel
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Flashtube Media Downloader";
 }
 
 <div class="text-center body-margin">
@@ -8,7 +8,7 @@
     <p>A free service for downloading your youtube video and converting it to MP3</p>
     <form id="downloadForm">
         <div class="row">
-            <div class="col-11">
+            <div class="col-11 mb-2">
                 <input type="text" id="urlInput" name="url" placeholder="Enter Youtube Video URL"
                     class="form-control" />
             </div>
@@ -16,10 +16,18 @@
                 <select id="formatSelect" class="form-control">
                     <option value="webm">WEBM</option>
                     <option value="mp3">MP3</option>
+                    <option value="mp4">MP4</option>
                 </select>
             </div>
         </div>
-        <div id="downloadStatus" style="display: none; margin-top: 20px;">Downloading...</div>
+        <div class="mb-2" id="downloadStatus" style="display: none; margin-top: 20px;">Downloading...</div>
+
+        <div class="container">
+            <div class="d-flex justify-content-center">
+                <img id="thumbnail" class="img-thumbnail" style="display = none; width: 200px; height: 200px;">
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary" id="downloadButton" style="margin-top: 20px;">Download</button>
     </form>
 </div>
